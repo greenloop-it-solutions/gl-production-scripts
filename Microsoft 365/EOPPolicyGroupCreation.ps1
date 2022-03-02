@@ -40,8 +40,8 @@ Set-AzureAdMsGroup -Id $($standardGroup.id) -GroupTypes $groupTypes.ToArray() -M
 Connect-ExchangeOnline
 
 # set both Groups - hidden from GAL, Private, and turn off the welcome email.
-Set-UnifiedGroup -Identity $($standardGroup.id) -UnifiedGroupWelcomeMessageEnable:$false -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
-Set-UnifiedGroup -Identity $($strictGroup.id) -UnifiedGroupWelcomeMessageEnable:$false  -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
+Set-UnifiedGroup -Identity $($standardGroup.id) -UnifiedGroupWelcomeMessageEnabled:$false -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
+Set-UnifiedGroup -Identity $($strictGroup.id) -UnifiedGroupWelcomeMessageEnabled:$false  -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
 
 # turn on the dynamic processing. Within a minute or two the Group Membership should be updated.
 Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "on"
