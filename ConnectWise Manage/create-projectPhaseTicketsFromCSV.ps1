@@ -175,6 +175,6 @@ if ($response.Count -eq 1) {
     Write-Host "We got $($response.Count) results, which is unexpected. Please adjust your search terms and try again."
 }
 
-#clear sensitive variables
+#remove sensitive variables
 $varsToClear = @('userAPIprivatekey', 'pair', 'encodedCreds', 'headers', 'basicAuthValue')
-Clear-Variable $varsToClear -ErrorAction SilentlyContinue
+Remove-Variable $varsToClear -ErrorAction SilentlyContinue
