@@ -8,7 +8,7 @@ This script creates Groups for Exchange Online Protection Policy enforcement. It
     Author:      Stephen Moody, GreenLoop IT Solutions
     Created:     2022_03_02
 	Revised:     --
-    Version:     1.0
+    Version:     1.1
     
 #>
 ###################################################################################################
@@ -16,7 +16,14 @@ This script creates Groups for Exchange Online Protection Policy enforcement. It
 # need to be connected to AzureAD PowerShell for the first part.
 Connect-AzureAD
 # currently, have to use the "preview" module for the commands on line 22 to work.
-Import-Module -Name AzureADPreview
+Install-module AzureADPreview -Repository PSGallery -AllowClobber -Force
+
+#if you have both modules, you should ensure that the correct module is the one you are using:
+
+# Unload the AzureAD module (or continue if it's already unloaded)
+Remove-Module AzureAD -ErrorAction SilentlyContinue
+# Load the AzureADPreview module
+Import-Module AzureADPreview
 
 # Creates the EOP Standard Policy Group as a 365 (Unified) Group. It will convert it to Dynamic and apply the rule at the next step.
 $standardGroup = New-AzureADMSGroup -Description “All users get the EOP Standard Policy applied by default. No need to exclude them for *strict* as strict overrides *standard*.” -DisplayName “EOP Standard Protection Policy Users” -MailEnabled $true -SecurityEnabled $true -MailNickname “EOPStdPolicyUsers” -GroupTypes “Unified”
@@ -44,4 +51,4 @@ Set-UnifiedGroup -Identity $($standardGroup.id) -UnifiedGroupWelcomeMessageEnabl
 Set-UnifiedGroup -Identity $($strictGroup.id) -UnifiedGroupWelcomeMessageEnabled:$false  -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
 
 # turn on the dynamic processing. Within a minute or two the Group Membership should be updated.
-Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "on"
+Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "On"
