@@ -26,9 +26,9 @@ Remove-Module AzureAD -ErrorAction SilentlyContinue
 Import-Module AzureADPreview
 
 # Creates the EOP Standard Policy Group as a 365 (Unified) Group. It will convert it to Dynamic and apply the rule at the next step.
-$standardGroup = New-AzureADMSGroup -Description “All users get the EOP Standard Policy applied by default. No need to exclude them for *strict* as strict overrides *standard*.” -DisplayName “EOP Standard Protection Policy Users” -MailEnabled $true -SecurityEnabled $true -MailNickname “EOPStdPolicyUsers” -GroupTypes “Unified”
+$standardGroup = New-AzureADMSGroup -Description "All users get the EOP Standard Policy applied by default. No need to exclude them for *strict* as strict overrides *standard*." -DisplayName "EOP Standard Protection Policy Users" -MailEnabled $true -SecurityEnabled $true -MailNickname "EOPStdPolicyUsers" -GroupTypes "Unified"
 # Creates the EOP Strict Policy Group as a 365 (Unified) Group. This is going to stay a static group.
-$strictGroup = New-AzureADMSGroup -Description “Add specific users that need *strict* protection here. Should not need to exclude them from the *standard* policy as strict policy overrides.” -DisplayName “EOP Strict Protection Policy Users” -MailEnabled $true -SecurityEnabled $true -MailNickname “EOPStrictPolicyUsers” -GroupTypes “Unified”
+$strictGroup = New-AzureADMSGroup -Description "Add specific users that need *strict* protection here. Should not need to exclude them from the *standard* policy as strict policy overrides." -DisplayName "EOP Strict Protection Policy Users" -MailEnabled $true -SecurityEnabled $true -MailNickname "EOPStrictPolicyUsers" -GroupTypes "Unified"
 
 #shouldn't need to change this
 $dynamicGroupTypeString = "DynamicMembership"
