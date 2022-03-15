@@ -84,6 +84,40 @@ function Set-CWProjectTicketTask {
     }
 }
 
+function Set-CWProjectTicketNote {
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium')]
+    param (
+        [Parameter(Mandatory)]
+        [int]$TicketID,
+
+        [Parameter()]
+        [string[]]$InternalNotes,
+
+        [Parameter()]
+        [switch]$ClearExisting
+    )
+
+    $endpoint = "project/tickets/$TicketID/notes"
+
+    if ($ClearExisting.IsPresent) {
+        if ($PSCmdlet.ShouldProcess($TicketID, "Clear existing notes")) {
+            $notesToDelete = (Get-CWProjectTicketNote -TicketID $TicketID).id
+            foreach ($id in $notesToDelete) {
+                Invoke-RestMethod ($manage_base_url + $endpoint + "/$id" ) -Method 'DELETE' -Headers $headers
+            }
+        }
+    }
+
+    $body = @{
+        internalAnalysisFlag = $true
+        text                 = ''
+    }
+    foreach ($note in $InternalNotes) {
+        $body.text = $note
+        Invoke-RestMethod ($manage_base_url + $endpoint) -Method 'POST' -Headers $headers -Body ($body | ConvertTo-Json)
+    }
+}
+
 function New-CWProjectTicket {
     [CmdletBinding()]
     param (
@@ -159,10 +193,10 @@ if ($response.Count -eq 1) {
                 ContactName             = $username
                 ContactEmailAddress     = $user.EmailAddress
                 InitialDescription      = $descriptionNotes
-                InitialInternalAnalysis = $internalNotes
             }
 
             $ticketID = (New-CWProjectTicket @projectTicketParams).id
+            Set-CWProjectTicketNote -TicketID $ticketID -InternalNotes $internalNotes | Out-Null
             Set-CWProjectTicketTask -TicketID $ticketID -TaskNotes $taskNotes | Out-Null
 
             Write-Host "Ticket $ticketID created for $username."
