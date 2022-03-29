@@ -182,6 +182,6 @@ do {
         Set-MsolUser -UserPrincipalName $upn -UsageLocation $usagelocation -TenantId $tenantId
         Set-MsolUserLicense -UserPrincipalName $upn -AddLicenses $SKU -TenantId $tenantId
     }
-    $continue = "Would you like to run again with a different tenant? (Y|N)" 
+    $continue = Read-Host "Would you like to run again with a different tenant? (Y|N)" 
 }
 while ($continue -eq 'Y')
