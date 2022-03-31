@@ -7,7 +7,7 @@
     6. Paste this token when prompted
     This version backs up tokens for a single Organization, specified by Org ID.
 #>
-$OrgID = Read-Host 'Enter IT Glue Org ID'
+$OrgID = Read-Host 'Enter IT Glue Org ID to export OTP secrets for'
 $Token = Read-Host 'Enter Bearer Token'
 $APIEndpoint = 'https://itg-api-prod-api-lb-us-west-2.itglue.com'
 $resource_uri = "/api/organizations/$OrgID/relationships/passwords"
@@ -25,7 +25,7 @@ do {
 } while ($ExistingPasswordAsset.meta.'next-page' -ne $null)
 $objects = foreach ($id in $otpEnabled.Id) {
     $attribs = (Invoke-RestMethod -Method Get -Uri ($APIEndpoint + "/api/passwords/$($id)?show_password=true") -Headers $headers).data.attributes
-    $attribs | Select-Object name,username,password,resource-url,password-category-name,otp-secret
+    $attribs | Select-Object name,organization-id,organization-name,username,password,resource-url,password-category-name,otp-secret
 }
 Write-Host "Exporting passwords to $env:Temp\OTPSecrets$OrgID.csv" -ForegroundColor Green
 ii $env:Temp
