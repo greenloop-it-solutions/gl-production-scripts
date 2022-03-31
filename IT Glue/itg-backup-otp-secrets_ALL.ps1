@@ -24,7 +24,7 @@ do {
 } while ($ExistingPasswordAsset.meta.'next-page' -ne $null)
 $objects = foreach ($id in $otpEnabled.Id) {
     $attribs = (Invoke-RestMethod -Method Get -Uri ($APIEndpoint + "/api/passwords/$($id)?show_password=true") -Headers $headers).data.attributes
-    $attribs | Select-Object name,username,password,resource-url,password-category-name,otp-secret
+    $attribs | Select-Object name,organizationname-id,organization-name,username,password,resource-url,password-category-name,otp-secret
 }
 Write-Host "Exporting passwords to $env:Temp\OTPSecretsAll.csv" -ForegroundColor Green
 $objects | Export-Csv -Path "$env:Temp\OTPSecretsAll.csv" -NoTypeInformation
