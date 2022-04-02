@@ -50,5 +50,12 @@ Connect-ExchangeOnline
 Set-UnifiedGroup -Identity $($standardGroup.id) -UnifiedGroupWelcomeMessageEnabled:$false -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
 Set-UnifiedGroup -Identity $($strictGroup.id) -UnifiedGroupWelcomeMessageEnabled:$false  -AccessType Private -HiddenFromExchangeClientsEnabled:$true -HiddenFromAddressListsEnabled:$true
 
-# turn on the dynamic processing. Within a minute or two the Group Membership should be updated.
-Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "On"
+$WelcomeMessageEnabled = [boolean](Get-UnifiedGroup -Identity $($standardGroup.id) -IncludeAllProperties | Select WelcomeMessageEnabled).WelcomeMessageEnabled
+
+#seems that sometimes this doesn't apply the first time, or right away. Adding this for now. May change to a do-while when I have an opportunity. -SM
+if (!$WelcomeMessageEnabled) {
+    # turn on the dynamic processing. Within a minute or two the Group Membership should be updated.
+    Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "On"
+} else {
+    Write-Host "Unable to set rule processing to 'On' because Welcome Messages are still disabled. Please check this and correct it before proceeding! Sometimes there's a processing delay, so you may want to re-run lines 51 through the end, potentially more than once."   
+}
