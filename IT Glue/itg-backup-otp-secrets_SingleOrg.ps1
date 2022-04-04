@@ -28,4 +28,5 @@ $objects = foreach ($id in $otpEnabled.Id) {
     $attribs | Select-Object name,organization-id,organization-name,username,password,resource-url,password-category-name,otp-secret
 }
 Write-Host "Exporting passwords to $env:Temp\OTPSecrets$OrgID.csv" -ForegroundColor Green
+$objects | Export-Csv -Path "$env:Temp\OTPSecretsAll.csv" -NoTypeInformation
 ii $env:Temp
