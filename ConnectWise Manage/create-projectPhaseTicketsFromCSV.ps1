@@ -4,6 +4,12 @@
 #currently does NOT populate phone numbers, so make sure to use a TimeZest appt. type that requires user to provide a callback number and populates it into the ticket!
 
 using namespace System.Runtime.InteropServices
+Add-Type -AssemblyName System.Windows.Forms
+$fileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
+    #using the Desktop location as a starting point
+    InitialDirectory = [Environment]::GetFolderPath('Desktop')
+    Filter = 'CSV (*.csv)|*.csv'
+}
 
 #get user input
 $userAPIcompany = Read-Host "Provide the Manage company name"
@@ -13,7 +19,16 @@ $manageServerFqdn = Read-Host "Provide the FQDN of your Manage server. Do not us
 $ClientNameString = Read-Host "Please Enter the first part of the company name. No wildcard required."
 $ProjectNameString = Read-Host "Please Enter the Project Name, exactly as it appears in Manage."
 $projectPhase = Read-Host "Enter the 'WBS' project phase (i.e. '2' or '3.2') to use for these tickets. It needs to already exist!"
-$csvFilePath = Read-Host "Enter the full file system path to your CSV file. It should have headers, with columns for DisplayName and EmailAddress."
+
+Write-Host "Browse to and select the CSV file. It should have headers with columns for DisplayName and EmailAddress."
+$fileBrowser.Title = "Select file"
+$null = $fileBrowser.ShowDialog()
+if ([string]::IsNullOrEmpty($fileBrowser.FileName)) {
+    throw "File path is empty. Exiting script."
+} else {
+    $csvFilePath = $fileBrowser.FileName
+}
+
 $ticketSummary = Read-Host "Provide a brief description for these tickets, to go in the summary line."
 $ticketTemplateID = Read-Host "Enter a project ticket ID to serve as the template"
 $manage_base_url = "https://$($manageServerFqdn)/v4_6_release/apis/3.0/"
@@ -60,7 +75,7 @@ function Set-CWProjectTicketTask {
         [int]$TicketID,
 
         [Parameter()]
-        [string[]]$TaskNotes,
+        [array[]]$TaskNotes,
 
         [Parameter()]
         [switch]$ClearExisting
@@ -77,9 +92,10 @@ function Set-CWProjectTicketTask {
         }
     }
 
-    $body = @{notes = "" }
-    foreach ($note in $TaskNotes) {
-        $body.notes = $note
+    $body = @{notes = ""; priority = $null}
+    foreach ($n in $TaskNotes) {
+        $body.notes = $n.notes
+        $body.priority = $n.priority
         Invoke-RestMethod ($manage_base_url + $endpoint) -Method 'POST' -Headers $headers -Body ($body | ConvertTo-Json)
     }
 }
@@ -118,6 +134,18 @@ function Set-CWProjectTicketNote {
     }
 }
 
+function Get-CWProjectTicket {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [int]$TicketID
+    )
+
+    $endpoint = "project/tickets/$($TicketID)"
+    Invoke-RestMethod ($manage_base_url + $endpoint) -Method 'GET' -Headers $headers
+
+}
+
 function New-CWProjectTicket {
     [CmdletBinding()]
     param (
@@ -137,6 +165,8 @@ function New-CWProjectTicket {
         [ValidateLength(1,250)]
         [string]$ContactEmailAddress,
 
+        [double]$BudgetHours,
+
         [string]$InitialDescription,
 
         [string]$InitialInternalAnalysis
@@ -149,6 +179,7 @@ function New-CWProjectTicket {
         phase                   = $Phase
         contactName             = $username
         contactEmailAddress     = $ContactEmailAddress
+        budgetHours             = $BudgetHours
         initialDescription      = $InitialDescription
         initialInternalAnalysis = $InitialInternalAnalysis
     } | ConvertTo-Json
@@ -157,12 +188,15 @@ function New-CWProjectTicket {
 }
 
 #get the description & internal notes from the ticket ID
-$ticketInfo = Get-CWProjectTicketNote -TicketID $ticketTemplateID
-$descriptionNotes = ($ticketInfo | Where-Object {$_.detailDescriptionFlag -eq $true}).text
-$internalNotes = ($ticketInfo | Where-Object {$_.internalAnalysisFlag -eq $true}).text
+$ticketNoteInfo = Get-CWProjectTicketNote -TicketID $ticketTemplateID
+$descriptionNotes = ($ticketNoteInfo | Where-Object {$_.detailDescriptionFlag -eq $true}).text
+$internalNotes = ($ticketNoteInfo | Where-Object {$_.internalAnalysisFlag -eq $true}).text
 
-#and get the task notes
-$taskNotes = (Get-CWProjectTicketTask -TicketID $ticketTemplateID).notes
+#get the task notes
+$taskNotes = Get-CWProjectTicketTask -TicketID $ticketTemplateID
+
+#get budget hours
+$budgetHours = (Get-CWProjectTicket -TicketID $ticketTemplateID).budgetHours
 
 #find the project
 $request_url = $manage_base_url + "project/projects?conditions=company/name LIKE `'$ClientNameString*`' AND name = `'$ProjectNameString`'"
@@ -192,6 +226,7 @@ if ($response.Count -eq 1) {
                 Phase                   = @{id = $phaseId}
                 ContactName             = $username
                 ContactEmailAddress     = $user.EmailAddress
+                BudgetHours             = $budgetHours
                 InitialDescription      = $descriptionNotes
             }
 
