@@ -5,6 +5,7 @@
 
 using namespace System.Runtime.InteropServices
 Add-Type -AssemblyName System.Windows.Forms
+
 $fileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
     #using the Desktop location as a starting point
     InitialDirectory = [Environment]::GetFolderPath('Desktop')
@@ -15,6 +16,15 @@ $fileBrowser = New-Object System.Windows.Forms.OpenFileDialog -Property @{
 $userAPIcompany = Read-Host "Provide the Manage company name"
 $userAPIpublickey = Read-Host "Provide your public API key for Manage"
 $userAPIprivatekey = Read-Host "Provide your private API key for Manage" -AsSecureString
+
+do {
+    $clientID = Read-Host "Provide your Manage Client ID"
+    $validGuid = [guid]::TryParse($clientID, $([ref][guid]::Empty))
+    if (-not $validGuid) {
+        Write-Warning "Not a valid client ID (GUID). Try again."
+    }
+} until ($validGuid)
+
 $manageServerFqdn = Read-Host "Provide the FQDN of your Manage server. Do not use https:// or a trailing slash!"
 $ClientNameString = Read-Host "Please Enter the first part of the company name. No wildcard required."
 $ProjectNameString = Read-Host "Please Enter the Project Name, exactly as it appears in Manage."
@@ -43,7 +53,7 @@ $basicAuthValue = "Basic $encodedCreds"
 $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
 $headers.Add("Authorization", $basicAuthValue)
 $headers.Add("Content-Type", "application/json")
-$headers.Add("clientid", "2628d75d-c2ea-43c4-bac4-33ea7181d0d6")
+$headers.Add("clientid", $clientID)
 
 #build functions
 function Get-CWProjectTicketNote {
@@ -143,7 +153,6 @@ function Get-CWProjectTicket {
 
     $endpoint = "project/tickets/$($TicketID)"
     Invoke-RestMethod ($manage_base_url + $endpoint) -Method 'GET' -Headers $headers
-
 }
 
 function New-CWProjectTicket {
