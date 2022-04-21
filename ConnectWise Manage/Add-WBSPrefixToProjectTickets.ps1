@@ -19,7 +19,7 @@ $headers.Add("clientid", "2628d75d-c2ea-43c4-bac4-33ea7181d0d6")
 
 $tickets = Invoke-RestMethod "https://connect.greenloopsolutions.com/v4_6_release/apis/3.0/project/tickets?conditions=company/name LIKE '$companyNameMatch*' AND project/name = '$projectNameMatch'" -Method 'GET' -Headers $headers
 
-foreach ($ticket in $response) {
+foreach ($ticket in $tickets) {
     $wbsCode = $ticket.wbsCode
     $summary = $ticket.summary
     
