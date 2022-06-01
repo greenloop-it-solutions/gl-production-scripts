@@ -7,7 +7,7 @@ This script creates Groups for Exchange Online Protection Policy enforcement. It
     FileName:    EOPPolicyGroupCreation.ps1
     Author:      Stephen Moody, GreenLoop IT Solutions
     Created:     2022_03_02
-	Revised:     --
+	Revised:     2022_06_01 - Randall (Adjusted some verbiage and line suggestions at the end.)
     Version:     1.1
     
 #>
@@ -57,5 +57,5 @@ if (!$WelcomeMessageEnabled) {
     # turn on the dynamic processing. Within a minute or two the Group Membership should be updated.
     Set-AzureAdMsGroup -Id $($standardGroup.id) -MembershipRuleProcessingState "On"
 } else {
-    Write-Host "Unable to set rule processing to 'On' because Welcome Messages are still disabled. Please check this and correct it before proceeding! Sometimes there's a processing delay, so you may want to re-run lines 51 through the end, potentially more than once."   
+    Write-Host "Unable to set rule processing to 'On' because Welcome Messages are still not disabled. Please check this and correct it before proceeding! Sometimes there's a processing delay, so you may want to re-run lines 50 through the end, potentially more than once."   
 }
