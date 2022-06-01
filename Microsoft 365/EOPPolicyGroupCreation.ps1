@@ -8,7 +8,7 @@ This script creates Groups for Exchange Online Protection Policy enforcement. It
     Author:      Stephen Moody, GreenLoop IT Solutions
     Created:     2022_03_02
 	Revised:     2022_06_01 - Randall (Adjusted some verbiage and line suggestions at the end.)
-    Version:     1.1
+    Version:     1.11
     
 #>
 ###################################################################################################
