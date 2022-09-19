@@ -3,7 +3,9 @@
 # creates local accounts and network share. Gives service account necessary security profile permissions.
 $BackupAccountName = "backupUser"
 $BackupSvcAccountName = "svc_aMMS"
-$BackupDataPath = "E:\Backup_Data"
+$BackupDriveLetter = "E:"
+$BackupDataPath = "$($BackupDriveLetter)\Backup_Data"
+$BackupDRPath = "$($BackupDriveLetter)\DR_Test"
 
 function Get-RandomPassword {
     param (
@@ -19,6 +21,12 @@ function Get-RandomPassword {
 $BackupData = Test-Path $BackupDataPath
 if (!$BackupData) {
     New-Item -ItemType "directory" -Path $BackupDataPath
+}
+
+#create DR validation Directory
+$DRPath = Test-Path $BackupDRPath
+if (!$DRPath) {
+    New-Item -ItemType "directory" -Path $BackupDRPath
 }
 
 #Create a new backup service account with a Random Password
@@ -47,7 +55,6 @@ $ACL | Set-Acl -Path $BackupDataPath
 
 #create an SMB share and give our backup user Full Access permissions.
 New-SmbShare -Path $BackupDataPath -Name 'BackupData$' -ReadAccess "Administrators" -FullAccess $BackupAccountName
-
 
 #Give our MMS service account required local security context permissions
 $ExportFile = "$($env:SystemRoot)\Temp\CurrentConfig.inf"
