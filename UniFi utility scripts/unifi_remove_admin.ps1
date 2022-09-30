@@ -1,12 +1,11 @@
 #This script removes a specified UniFi Admin/SuperAdmin from all sites. 
 
-#specify the registered email address of the user you want to remove
-$admin_to_remove ="alias@domain.tld"
+$admin_to_remove = Read-Host "Specify the registered email address of the user you want to remove"
 
 $cred = Get-Credential -Message "Give UniFi portal SuperAdmin creds:"
 
 # UniFi Details
-$UniFiFqdn = "unifi.server.com"
+$UniFiFqdn = Read-Host "provide the FQDN of your UniFi instance. Leave off the https:// and any slashes!"
 $UnifiBaseUri = "https://" + $UniFiFqdn + ":8443/api"
 $UnifiCredentials = @{
     username = $cred.UserName
