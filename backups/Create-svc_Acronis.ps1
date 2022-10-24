@@ -1,4 +1,4 @@
-
+#!ps
 function Get-RandomPassword {
     param (
         [Parameter(Mandatory)]
