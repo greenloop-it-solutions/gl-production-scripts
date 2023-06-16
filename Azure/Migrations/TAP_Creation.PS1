@@ -119,7 +119,7 @@ if ($inputMethod -eq "2") {
 } elseif ($inputMethod -eq "1") {
     # Prompt for email addresses
     $emailAddresses = Read-Host "Enter email addresses separated by commas"
-    $emailAddresses = $emailAddresses -split ","
+    $emailAddresses = $emailAddresses -split "," | ForEach-Object { $_.Trim() }
 } else {
     Write-Host "Invalid choice. Please enter '1' or '2'." -ForegroundColor Red
     Exit
