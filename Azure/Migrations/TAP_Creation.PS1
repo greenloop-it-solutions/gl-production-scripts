@@ -3,7 +3,7 @@ Write-Host "Before running this script, please make sure to perform the followin
 Write-Host "1. Ensure that you have installed the Microsoft.Graph.Authentication module."
 Write-Host "2. Close any existing PowerShell sessions to avoid conflicts."
 Write-Host ""
-Write-Host "You will be promptd several times for GLobal Administrator Credentials.  This is normal."
+Write-Host "You will be promptd several times for Global Administrator Credentials.  This is normal."
 
 # Import required modules
 Import-Module -Name Microsoft.Graph.Authentication
