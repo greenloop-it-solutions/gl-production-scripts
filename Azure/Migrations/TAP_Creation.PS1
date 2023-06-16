@@ -1,4 +1,7 @@
-# Prompt the user to perform specific actions before running the script
+# Clear the screen
+Clear-Host
+
+# Prompt the user to review key details before running the script
 Write-Host "This script generates TAPs for Azure Active Directory.  It can either display them, or export them to CSV."
 Write-Host ""
 Write-Host "The Microsoft.Graph.Authentication module is required.  The script will prompt you if you do not have it installed."
@@ -68,6 +71,13 @@ function Get-FolderUsingGUI {
 # Get the tenant name
 $tenant = Get-MgOrganization
 $tenantName = $tenant.DisplayName
+
+#Clear the Screen
+Clear-Host
+
+#Begin user input
+Write-Host "Welcome to GreenLoop Automated TAP creation." -ForegroundColor Green
+Write-Host ""
 
 # Prompt for input method
 $inputMethod = Read-Host "Enter '1' to input email addresses manually, '2' to import from a CSV file"
