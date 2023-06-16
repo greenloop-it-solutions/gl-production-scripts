@@ -68,6 +68,30 @@ function Get-FolderUsingGUI {
     return $folderBrowserDialog.SelectedPath
 }
 
+#Completely useless function for the nerdlulz that centers text
+$pswwidth = (get-host).UI.RawUI.MaxWindowSize.Width
+function Centralize()
+{
+  param(
+  [Parameter(Position=0,Mandatory=$true)]
+  [string]$S,
+  [Parameter(Position=1,Mandatory=$false,ParameterSetName="Color")]
+  [string]$C
+  )
+    $sLength = $S.Length
+    $padamt =  "{0:N0}" -f (($pswwidth-$sLength)/2)
+    $PadNum = $padamt/1 + $sLength
+    $CS = $S.PadLeft($PadNum," ").PadRight($PadNum," ")
+    if ($C) #if variable for color exists run below
+    {    
+        Write-Host $CS -ForegroundColor $C #Write to host with color
+    }
+    else #Need this to prevent output twice if color is provided
+    {
+        $CS #write without color
+    }
+}
+
 # Get the tenant name
 $tenant = Get-MgOrganization
 $tenantName = $tenant.DisplayName
@@ -76,7 +100,12 @@ $tenantName = $tenant.DisplayName
 Clear-Host
 
 #Begin user input
-Write-Host "Welcome to GreenLoop Automated TAP creation." -ForegroundColor Green
+
+Centralize -S "░█▀▀░█▀▄░█▀▀░█▀▀░█▀█░█░░░█▀█░█▀█░█▀█░░▀█▀░█▀█░█▀█░░█▀▀░█▀▄░█▀▀░█▀█░▀█▀░▀█▀░█▀█░█▀█" -C Green
+Centralize -S "░█░█░█▀▄░█▀▀░█▀▀░█░█░█░░░█░█░█░█░█▀▀░░░█░░█▀█░█▀▀░░█░░░█▀▄░█▀▀░█▀█░░█░░░█░░█░█░█░█" -C Green
+Centralize -S "░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀░▀░▀▀▀░▀▀▀░▀▀▀░▀░░░░░▀░░▀░▀░▀░░░░▀▀▀░▀░▀░▀▀▀░▀░▀░░▀░░▀▀▀░▀▀▀░▀░▀" -C Green
+
+Write-Host ""
 Write-Host ""
 
 # Prompt for input method
