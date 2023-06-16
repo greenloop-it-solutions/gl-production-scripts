@@ -1,10 +1,12 @@
 # Prompt the user to perform specific actions before running the script
-Write-Host "Before running this script, please make sure to perform the following steps:"
-Write-Host "Ensure that you have installed the Microsoft.Graph.Authentication module."
+Write-Host "This script generates TAPs for Azure Active Directory.  It can either display them, or export them to CSV."
 Write-Host ""
-Write-Host "You will be promptd several times for Global Administrator Credentials.  This is normal."
+Write-Host "The Microsoft.Graph.Authentication module is required.  The script will prompt you if you do not have it installed."
 Write-Host ""
-Start-Sleep 10
+Write-Host "You will need Global Administrator credentials for the tenant you wish to retrieve TAPs from."
+Write-Host ""
+Write-Host "Global Administrator credentials may be prompted several times.  This is intentional."
+Start-Sleep 15
 
 # Clear the screen
 Clear-Host
