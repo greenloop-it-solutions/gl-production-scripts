@@ -1,8 +1,10 @@
 # Prompt the user to perform specific actions before running the script
 Write-Host "Before running this script, please make sure to perform the following steps:"
-Write-Host "1. Ensure that you have installed the Microsoft.Graph.Authentication module."
+Write-Host "Ensure that you have installed the Microsoft.Graph.Authentication module."
 Write-Host ""
 Write-Host "You will be promptd several times for Global Administrator Credentials.  This is normal."
+Write-Host ""
+Start-Sleep 10
 
 # Clear the screen
 Clear-Host
