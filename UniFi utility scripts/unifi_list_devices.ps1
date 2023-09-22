@@ -1,7 +1,7 @@
 $cred = Get-Credential -Message "Give UniFi portal Admin creds:"
 
 # UniFi Details
-$UniFiFqdn = "unifi.server.com"
+$UniFiFqdn = Read-Host "Provide the FQDN of your UniFi server. Don't include https:// port, or the rest of the URL string."
 $UnifiBaseUri = "https://" + $UniFiFqdn + ":8443/api"
 $UnifiCredentials = @{
     username = $cred.UserName
