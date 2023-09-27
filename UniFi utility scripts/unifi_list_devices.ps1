@@ -25,6 +25,7 @@ foreach ($site in $sites) {
     foreach ($device in $sitedevices) {
         $devicelist = New-Object -TypeName psobject 
         $devicelist | Add-Member -memberType NoteProperty -Name 'Site Name' -Value $site.desc;
+        $devicelist | Add-Member -memberType NoteProperty -Name 'MAC Address' -Value $device.mac;
         $devicelist | Add-Member -memberType NoteProperty -Name 'Device Name' -Value $device.name;
         $devicelist | Add-Member -memberType NoteProperty -Name 'Device Type' -Value $device.type;
         $devicelist | Add-Member -memberType NoteProperty -Name 'Device Model' -Value $device.model;
@@ -33,4 +34,4 @@ foreach ($site in $sites) {
     }
 }
 
-$devices | Export-Csv unifidevices.csv
+$devices | Export-Csv unifidevices.csv -NoTypeInformation
