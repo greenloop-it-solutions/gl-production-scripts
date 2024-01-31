@@ -1,19 +1,21 @@
 # Ensure TLS 1.2 for PowerShell gallery access
 [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
 
-# Check if the script is running as a Domain Administrator
-$currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[1]
-$domainAdmins = & net group "Domain Admins"
-if ($currentUser -notin $domainAdmins) {
-    Write-Host "This script must be run as a Domain Administrator. Please run the script with the appropriate permissions."
-    Read-Host "Press Enter to Exit"
+# Get the current username without the domain prefix
+$currentUsernameWithDomain = whoami
+$currentUsername = $currentUsernameWithDomain.Split('\')[1]
+
+# Check if the current user is a Domain Administrator
+$domainAdminCheck = (Get-ADUser $currentUsername -Properties memberof).memberof -like "*CN=Domain Admins*"
+if (-not $domainAdminCheck) {
+    Write-Host "$currentUsername is not a member of the Domain Admins group. Please run the script with appropriate permissions."
+    Read-Host "Press any key to exit..."
     exit
 }
 
 # Check if the session is elevated
 if (-not ([System.Security.Principal.WindowsPrincipal][System.Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "This script requires elevated permissions. Please restart the script in an elevated PowerShell session."
-    Read-Host "Press Enter to Exit"
     exit
 }
 
@@ -25,8 +27,7 @@ if (-not (Get-Module -ListAvailable -Name $moduleName)) {
         Install-Module -Name $moduleName -Force -AllowClobber
         Write-Host "Module '$moduleName' installed."
     } else {
-        Write-Host "Module '$moduleName' is required to run this script."
-        Read-Host "Press Enter to Exit"
+        Write-Host "Module '$moduleName' is required to run this script. Exiting."
         exit
     }
 } else {
